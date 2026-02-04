@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sistem Absensi Guru</title>
+  <style>
+    body{font-family:Arial;background:#f2f2f2;padding:20px}
+    .card{background:#fff;padding:20px;border-radius:8px;max-width:400px;margin:auto}
+    input,select,button{width:100%;padding:10px;margin:5px 0}
+    button{background:#007bff;color:#fff;border:none;border-radius:5px}
+    #absen{display:none}
+  </style>
+</head>
+<body>
+
+<div class="card" id="login">
+  <h2>Login Guru</h2>
+  <input id="username" placeholder="Username">
+  <input id="password" type="password" placeholder="Password">
+  <button onclick="login()">Login</button>
+</div>
+
+<div class="card" id="absen">
+  <h2>Form Absensi</h2>
+  <input id="nama" placeholder="Nama Siswa">
+  <input id="kelas" placeholder="Kelas">
+  <select id="status">
+    <option>Hadir</option>
+    <option>Izin</option>
+    <option>Sakit</option>
+    <option>Alpa</option>
+  </select>
+  <input id="catatan" placeholder="Catatan (bolos/telat)">
+  <button onclick="absen()">Simpan Absen</button>
+</div>
+
+<script>
+let token='';
+
+function login(){
+  fetch('/login',{
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body:JSON.stringify({
+      username:username.value,
+      password:password.value
+    })
+  }).then(r=>r.json()).then(d=>{
+    if(d.success){
+      token=d.token;
+      login.style.display='none';
+      absen.style.display='block';
+    }else alert('Login gagal');
+  });
+}
+
+function absen(){
+  fetch('/absen',{
+    method:'POST',
+    headers:{
+      'Content-Type':'application/json',
+      'Authorization':token
+    },
+    body:JSON.stringify({
+      nama_siswa:nama.value,
+      kelas:kelas.value,
+      status:status.value,
+      catatan:catatan.value
+    })
+  }).then(r=>r.json()).then(()=>alert('Absensi tersimpan'));
+}
+</script>
+
+</body>
+</html>
